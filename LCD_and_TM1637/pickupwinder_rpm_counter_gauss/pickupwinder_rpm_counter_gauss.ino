@@ -3,13 +3,14 @@
  *  Arduino Nano
  *  SS495A Hall Effect Sensor
  *  16x2 I2C LCD
+ *  2 x TM1637
  */
 
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 #include <TM1637Display.h>
 
-// Digital connection pins
+// TM1637 digital connection pins
 #define CLK 6
 #define DIO 7
 
