@@ -10,7 +10,9 @@
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
-static int voltageZero = 0;
+static int voltageZero = 0,
+           peak = 0;
+
 int voltage = 0,
     gauss = 0,
     gaussAbs = 0;
@@ -36,20 +38,18 @@ void gaussValues() {
 }
 
 
-int peak () {
+int peakFunc () {
   static int threshold = 0;
-  static int peak = 0;
+
   if (gaussAbs > threshold && gaussAbs > 8) {
     threshold = gaussAbs;
-    peak = gaussAbs;
+    peak = gauss;
   }
   else if (gaussAbs < 8) {
     threshold = 0;
   }
-  if (gauss > 0) {
-    return peak;
-  } else
-    return -peak;
+
+  return peak;
 }
 
 
@@ -69,26 +69,22 @@ char polarity (int v, int vZero) {
 // Add padding spaces to overwrite previous digits, absolute and reduce noise around 0.
 void padding(int var, int x, int y) {
   var = abs(var);
-  if (var < 6) {
-    lcd.setCursor(x, y);
-    lcd.print("  ");
-    lcd.setCursor(x + 2, y);
-  }
-  else if (var < 10) {
-    lcd.setCursor(x, y);
+
+  lcd.setCursor(x, y);
+
+  if (var < 10) {
     lcd.print("  ");
     lcd.setCursor(x + 2, y);
   }
   else if (var < 100) {
-    lcd.setCursor(x, y);
     lcd.print(" ");
     lcd.setCursor(x + 1, y);
   }
-  else {
-    lcd.setCursor (x, y);
-  }
+
   if (var < 6) {
     lcd.print("0");
+  } else if (var > 999) {
+    lcd.print("err");
   } else {
     lcd.print(var);
   }
@@ -114,7 +110,7 @@ void gaussDisplay() {
   lcd.print("Peak");
 
   lcd.setCursor(12, 1);
-  lcd.print(polarity(peak(), 0));
+  lcd.print(polarity(peak, 0));
 
-  padding (peak(), 13, 1);
+  padding (peakFunc(), 13, 1);
 }
