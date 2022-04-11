@@ -84,17 +84,21 @@ void padding(int var, int x, int y) {
   lcd.setCursor(x, y);
 
   if (var < 10) {
+    lcd.print("   ");
+    lcd.setCursor(x + 3, y);
+  }
+  else if (var < 100) {
     lcd.print("  ");
     lcd.setCursor(x + 2, y);
   }
-  else if (var < 100) {
+  else if (var < 1000) {
     lcd.print(" ");
     lcd.setCursor(x + 1, y);
   }
 
   if (var < 6) {
     lcd.print("0");
-  } else if (var > 999) {
+  } else if (var > 9999) {
     lcd.print("err");
   } else {
     lcd.print(var);
@@ -104,17 +108,17 @@ void padding(int var, int x, int y) {
 
 void gaussDisplay() {
   // Set cursor column, row
-  padding(voltage, 0, 1);
+  padding(voltage, -1, 1);
 
 
-  padding(gaussAbs, 7, 1);
+  padding(gaussAbs, 6, 1);
 
-  lcd.setCursor(6, 1);
+  lcd.setCursor(5, 1);
   lcd.print(polarity(voltage, voltageZero));
 
 
-  lcd.setCursor(12, 1);
+  lcd.setCursor(11, 1);
   lcd.print(polarity(peak, 0));
 
-  padding (peakFunc(), 13, 1);
+  padding (peakFunc(), 12, 1);
 }
