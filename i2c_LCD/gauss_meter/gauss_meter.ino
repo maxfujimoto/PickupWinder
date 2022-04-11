@@ -22,6 +22,17 @@ void setup() {
   lcd.init();
   lcd.backlight();
   voltageZero = analogRead(A0);
+
+  // Set cursor column, row
+  //Static Text
+  lcd.setCursor(0, 0);
+  lcd.print("Volts");
+
+  lcd.setCursor(6, 0);
+  lcd.print("Gauss");
+
+  lcd.setCursor(12, 0);
+  lcd.print("Peak");
 }
 
 
@@ -93,21 +104,14 @@ void padding(int var, int x, int y) {
 
 void gaussDisplay() {
   // Set cursor column, row
-  lcd.setCursor(0, 0);
-  lcd.print("Volts");
-
   padding(voltage, 0, 1);
 
-  lcd.setCursor(6, 0);
-  lcd.print("Gauss");
 
   padding(gaussAbs, 7, 1);
 
   lcd.setCursor(6, 1);
   lcd.print(polarity(voltage, voltageZero));
 
-  lcd.setCursor(12, 0);
-  lcd.print("Peak");
 
   lcd.setCursor(12, 1);
   lcd.print(polarity(peak, 0));
