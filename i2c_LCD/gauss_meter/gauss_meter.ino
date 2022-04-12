@@ -99,7 +99,7 @@ void padding(int var, int x, int y) {
   if (var < 6) {
     lcd.print("0");
   } else if (var > 9999) {
-    lcd.print("err");
+    lcd.print("eror");
   } else {
     lcd.print(var);
   }
