@@ -13,11 +13,10 @@
 
 TM1637Display display(CLK, DIO);
 
-unsigned long list[4] = {0, 0, 0, 0};
+unsigned long list[2] = {0, 0};
 unsigned long currentMs;
 
-volatile int counter = 1;
-int length = 2;
+bool index = 0;
 
 
 void setup() {
@@ -26,37 +25,25 @@ void setup() {
 }
 
 
-unsigned long *scroll (unsigned long *list, unsigned long n, int index) {
-  list[index % 4] = n;
-  return list;
-}
-
-
-int intervalFunc (unsigned long *list, int length, int index) {
+int intervalFunc (unsigned long *list, int index) {
   float interval = 0;
-  for (int i = 0; i < length - 1; ++i) {
-    interval += list[(index - i) % 4] - list[(index - i - 1) % 4];
-  }
-  return ((1000 / (interval / (length - 1)) * 60));
+  interval = list[index] - list[!index];
+  return ((1000 / interval) * 60);
 }
-
 
 void count() {
-  scroll(list, currentMs, counter);
-
-  int intptr = intervalFunc(list, length, counter);
+  list[index] = currentMs;
+  
+  int intptr = intervalFunc(list, index);
   display.showNumberDec(intptr);
 
-  ++counter;
-  if (length < 4) {
-    ++length;
-  }
+  index = !index;
 }
 
 
 void loop() {
   currentMs = millis();
-  if (currentMs - list[(counter - 1) % 4] > 1000) {
+  if (currentMs - list[!index] > 1000) {
     display.showNumberDec(0);
   }
 }
