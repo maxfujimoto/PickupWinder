@@ -30,8 +30,8 @@ bool index = 0;
 
 int intptr = 0;
 
-volatile bool switchState = 0,
-              i = switchState;
+//volatile bool switchState = 0,
+//              i = switchState;
 
 
 void setup() {
@@ -45,15 +45,7 @@ void setup() {
 }
 
 
-//void intervalFunc (unsigned long *list, int length, int index) {
-//  float interval = 0;
-//  for (int i = 0; i < length - 1; ++i) {
-//    interval += list[(index - i) % 4] - list[(index - i - 1) % 4];
-//  }
-//
-//  intptr = ((1000 / (interval / (length - 1)) * 60));
-//}
-int intervalFunc (unsigned long *list, int index) {
+void intervalFunc (unsigned long *list, int index) {
   float interval = 0;
   interval = list[index] - list[!index];
   intptr =  ((1000 / interval) * 60);
@@ -105,12 +97,6 @@ void count() {
 
 
 void rpmCountDisplay() {
-  lcd.setCursor(2, 0);
-  lcd.print("COUNT");
-
-  lcd.setCursor(10, 0);
-  lcd.print("RPM");
-
   if (currentMs - list[!index] > 1000) {
     intptr = 0;
   }
@@ -121,16 +107,30 @@ void rpmCountDisplay() {
 
 void loop() {
   currentMs = millis();
-  switchState = digitalRead(SWITCH);
+  volatile bool switchState = digitalRead(SWITCH);
+  static bool i = switchState;
 
   if (switchState == 1) {
     for (i; i != switchState; i = !i) {
       wipe();
+      lcd.setCursor(2, 0);
+      lcd.print("COUNT");
+
+      lcd.setCursor(10, 0);
+      lcd.print("RPM");
     }
     rpmCountDisplay();
   } else {
     for (i; i != switchState; i = !i) {
       wipe();
+      lcd.setCursor(0, 0);
+      lcd.print("Volts");
+
+      lcd.setCursor(6, 0);
+      lcd.print("Gauss");
+ 
+      lcd.setCursor(12, 0);
+      lcd.print("Peak");      
     }
     gaussValues();
     gaussDisplay();
@@ -179,19 +179,22 @@ void padding(int var, int x, int y) {
   lcd.setCursor(x, y);
 
   if (var < 10) {
+    lcd.print("   ");
+    lcd.setCursor(x + 3, y);
+  }
+  else if (var < 100) {
     lcd.print("  ");
     lcd.setCursor(x + 2, y);
   }
-  else if (var < 100) {
+  else if (var < 1000) {
     lcd.print(" ");
     lcd.setCursor(x + 1, y);
   }
 
   if (var < 6) {
     lcd.print("0");
-  }
-  else if (var > 999) {
-    lcd.print("err");
+  } else if (var > 9999) {
+    lcd.print("eror");
   } else {
     lcd.print(var);
   }
@@ -200,21 +203,13 @@ void padding(int var, int x, int y) {
 
 void gaussDisplay() {
   // Set cursor column, row
-  lcd.setCursor(0, 0);
-  lcd.print("Volts");
 
   padding(voltage, 0, 1);
-
-  lcd.setCursor(6, 0);
-  lcd.print("Gauss");
 
   padding(gaussAbs, 7, 1);
 
   lcd.setCursor(6, 1);
   lcd.print(polarity(voltage, voltageZero));
-
-  lcd.setCursor(12, 0);
-  lcd.print("Peak");
 
   lcd.setCursor(12, 1);
   lcd.print(polarity(peak, 0));
