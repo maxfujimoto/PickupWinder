@@ -31,6 +31,7 @@ int intervalFunc (unsigned long *list, int index) {
   return ((1000 / interval) * 60);
 }
 
+
 void count() {
   list[index] = currentMs;
   
