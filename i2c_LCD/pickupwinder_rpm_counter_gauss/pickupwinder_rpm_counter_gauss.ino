@@ -21,11 +21,12 @@ int voltage = 0,
     gauss = 0,
     gaussAbs = 0;
 
-unsigned long list[4] = {0, 0, 0, 0};
+unsigned long list[2] = {0, 0};
 unsigned long currentMs;
 
 volatile int counter = 1;
-byte length = 2;
+
+bool index = 0;
 
 int intptr = 0;
 
@@ -44,19 +45,18 @@ void setup() {
 }
 
 
-unsigned long *scroll (unsigned long *list, unsigned long n, int index) {
-  list[index % 4] = n;
-  return list;
-}
-
-
-void intervalFunc (unsigned long *list, int length, int index) {
+//void intervalFunc (unsigned long *list, int length, int index) {
+//  float interval = 0;
+//  for (int i = 0; i < length - 1; ++i) {
+//    interval += list[(index - i) % 4] - list[(index - i - 1) % 4];
+//  }
+//
+//  intptr = ((1000 / (interval / (length - 1)) * 60));
+//}
+int intervalFunc (unsigned long *list, int index) {
   float interval = 0;
-  for (int i = 0; i < length - 1; ++i) {
-    interval += list[(index - i) % 4] - list[(index - i - 1) % 4];
-  }
-
-  intptr = ((1000 / (interval / (length - 1)) * 60));
+  interval = list[index] - list[!index];
+  intptr =  ((1000 / interval) * 60);
 }
 
 
@@ -95,14 +95,12 @@ void wipe() {
 
 
 void count() {
-  scroll(list, currentMs, counter);
+  list[index] = currentMs;
 
-  intervalFunc(list, length, counter);
+  intervalFunc(list, index);
 
+  index = !index;
   ++counter;
-  if (length < 4) {
-    ++length;
-  }
 }
 
 
@@ -113,7 +111,7 @@ void rpmCountDisplay() {
   lcd.setCursor(10, 0);
   lcd.print("RPM");
 
-  if (currentMs - list[(counter - 1) % 4] > 1000) {
+  if (currentMs - list[!index] > 1000) {
     intptr = 0;
   }
   fourDecPadding(counter - 1, 2, 1);
