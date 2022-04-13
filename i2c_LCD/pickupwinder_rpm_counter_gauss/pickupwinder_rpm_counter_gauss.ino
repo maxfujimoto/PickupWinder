@@ -30,8 +30,8 @@ bool index = 0;
 
 int intptr = 0;
 
-//volatile bool switchState = 0,
-//              i = switchState;
+volatile bool switchState = 0,
+              i = switchState;
 
 
 void setup() {
@@ -42,6 +42,7 @@ void setup() {
 
   attachInterrupt(0, count, RISING);
   voltageZero = analogRead(A0);
+  Serial.begin(9600);
 }
 
 
@@ -107,8 +108,7 @@ void rpmCountDisplay() {
 
 void loop() {
   currentMs = millis();
-  volatile bool switchState = digitalRead(SWITCH);
-  static bool i = switchState;
+  switchState = digitalRead(SWITCH);
 
   if (switchState == 1) {
     for (i; i != switchState; i = !i) {
@@ -204,15 +204,15 @@ void padding(int var, int x, int y) {
 void gaussDisplay() {
   // Set cursor column, row
 
-  padding(voltage, 0, 1);
+  padding(voltage, -1, 1);
 
-  padding(gaussAbs, 7, 1);
+  padding(gaussAbs, 6, 1);
 
-  lcd.setCursor(6, 1);
+  lcd.setCursor(5, 1);
   lcd.print(polarity(voltage, voltageZero));
 
-  lcd.setCursor(12, 1);
+  lcd.setCursor(11, 1);
   lcd.print(polarity(peak, 0));
 
-  padding(peakFunc(), 13, 1);
+  padding(peakFunc(), 12, 1);
 }
