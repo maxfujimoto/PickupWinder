@@ -30,8 +30,9 @@ bool index = 0;
 
 int intptr = 0;
 
-volatile bool switchState = 0,
-              i = switchState;
+volatile bool switchState = 0;
+
+bool  i = 0;
 
 
 void setup() {
@@ -42,7 +43,8 @@ void setup() {
 
   attachInterrupt(0, count, RISING);
   voltageZero = analogRead(A0);
-  Serial.begin(9600);
+
+  i = digitalRead(SWITCH);
 }
 
 
@@ -111,7 +113,7 @@ void loop() {
   switchState = digitalRead(SWITCH);
 
   if (switchState == 1) {
-    for (i; i != switchState; i = !i) {
+    for (i; i == switchState; i = !i) {
       wipe();
       lcd.setCursor(2, 0);
       lcd.print("COUNT");
@@ -121,7 +123,7 @@ void loop() {
     }
     rpmCountDisplay();
   } else {
-    for (i; i != switchState; i = !i) {
+    for (i; i == switchState; i = !i) {
       wipe();
       lcd.setCursor(0, 0);
       lcd.print("Volts");
